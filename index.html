@@ -1,1 +1,65 @@
-Teste 23213
+<!doctype html>
+  <title>Autômato Finito</title>
+  <html dir="ltr" lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" /> 
+    <link rel="stylesheet" href="template.css">
+    <script src="automato.js"></script>
+  </head>
+  <body>
+    <header id="pageHeader"></header>
+    <article id="mainArticle">
+        <div>
+          <div>
+            <output for="inputToken">Digite um token:</output>
+            <input id="inputToken" onchange="adicionarListaTokens(this.value)">
+          </div>
+          <div>
+            <output for="inputPalavra" >Digite uma palavra:</output>
+            <input id="inputPalavra" onkeyup="palavraChange(this.value)">
+          </div>
+        </div>
+
+        <div id="divTable" class="tg-wrap">
+          <table id="tableAutomato" class="tg">
+            <tr>
+              <th class="tg-fovp"></th>
+              <th class="tg-fovp">a</th>
+              <th class="tg-fovp">b</th>
+              <th class="tg-fovp">c</th>
+              <th class="tg-fovp">d</th>
+              <th class="tg-fovp">e</th>
+              <th class="tg-fovp">f</th>
+              <th class="tg-fovp">g</th>
+              <th class="tg-fovp">h</th>
+              <th class="tg-fovp">i</th>
+              <th class="tg-fovp">j</th>
+              <th class="tg-fovp">k</th>
+              <th class="tg-fovp">l</th>
+              <th class="tg-fovp">m</th>
+              <th class="tg-fovp">n</th>
+              <th class="tg-fovp">o</th>
+              <th class="tg-fovp">p</th>
+              <th class="tg-fovp">q</th>
+              <th class="tg-fovp">r</th>
+              <th class="tg-fovp">s</th>
+              <th class="tg-fovp">t</th>
+              <th class="tg-fovp">u</th>
+              <th class="tg-fovp">v</th>
+              <th class="tg-fovp">w</th>
+              <th class="tg-fovp">x</th>
+              <th class="tg-fovp">y</th>
+              <th class="tg-fovp">z</th>
+            </tr>
+          </table>
+        </div>
+    </article>
+    <nav id="mainNav" style="text-align: center;">
+      <output><strong>Tokens</strong></output>
+      <div id="divTokens" class="divToken"></div>
+    </nav>
+    <footer id="pageFooter" style="text-align: end;">
+      Kelwin Komka - 2019
+    </footer>
+  </body>
+</html>
