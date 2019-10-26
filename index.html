@@ -7,16 +7,17 @@
     <script src="automato.js"></script>
   </head>
   <body>
-    <header id="pageHeader"></header>
     <article id="mainArticle">
-        <div>
-          <div>
-            <output for="inputToken">Digite um token:</output>
-            <input id="inputToken" onchange="adicionarListaTokens(this.value)">
+        <div class="wrapper">
+          <div class="user-input-wrp">
+            <br/>
+            <input id="inputToken" type="text" class="inputText" onchange="adicionarListaTokens(this.value)" required>
+            <span class="floating-label">Digite um token</span>
           </div>
-          <div>
-            <output for="inputPalavra" >Digite uma palavra:</output>
-            <input id="inputPalavra" onkeyup="palavraChange(this.value)">
+          <div class="user-input-wrp">
+            <br/>
+            <input id="inputPalavra" type="text" class="inputText" onkeyup="palavraChange(this.value)" required>
+            <span class="floating-label">Digite uma palavra</span>
           </div>
         </div>
 
@@ -58,8 +59,5 @@
       <output><strong>Tokens</strong></output>
       <div id="divTokens" class="divToken"></div>
     </nav>
-    <footer id="pageFooter" style="text-align: end;">
-      Kelwin Komka - 2019
-    </footer>
   </body>
 </html>

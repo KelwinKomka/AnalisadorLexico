@@ -1,9 +1,12 @@
 var listaTokens = new Array;
 var estados = new Array;
+var indexEstado = -1;
 
 function palavraChange(valor) {
-
-    document.getElementById("pageHeader").innerHTML = valor;
+    if (valor.length > 2)
+        document.getElementById("inputPalavra").style.color = "red";
+    else
+        document.getElementById("inputPalavra").style.color = "#444";
 }
 
 function preencherLista(){
@@ -12,22 +15,32 @@ function preencherLista(){
         divTokens.removeChild(divTokens.lastChild);
     }
     var i = 0;
+
+    estados = new Array;
     for (i in listaTokens){
         var token = listaTokens[i];
-        var divItem = document.createElement("div");
-        var textItem = document.createTextNode(token);
         var buttonItem = document.createElement("BUTTON");
-        buttonItem.innerHTML = "Remover";
+        buttonItem.className = "btn";
+        buttonItem.innerHTML = token;
         buttonItem.addEventListener("click", function(){
-            console.log("removendo token="+token);
             listaTokens.splice(listaTokens.indexOf(token), 1);
             preencherLista();
         });
 
-        divItem.appendChild(textItem);
-        divItem.appendChild(buttonItem);
+        divTokens.appendChild(buttonItem);
 
-        divTokens.appendChild(divItem);
+        var estadosValor = new Array(token.length);
+        var j = 0;
+        for (j in token){
+            var letra = token[j].toLowerCase();
+            var letraIndex = letra.charCodeAt() - 97;
+            estadosValor[j] = new Array(26);
+            if (j == token.length-1)
+                estadosValor[j][letraIndex] = -1;
+            else
+                estadosValor[j][letraIndex] = Number(j)+1;
+        }
+        estados = estadosValor;
     }
 
     var tableAutomato = document.getElementById("tableAutomato");
@@ -50,7 +63,6 @@ function preencherLista(){
 
     for (i in estados){
         var estado = estados[i];
-        console.log("i="+i+", estado="+estado);
         tableRow = document.createElement("tr");
 
         var tableCell = document.createElement("td");
@@ -60,9 +72,10 @@ function preencherLista(){
         for (j = 0; j < 26; j++){
             tableCell = document.createElement("td");
             var valor = estado[j];
-            console.log("j="+j+", valor="+valor);
             tableCell.innerHTML = "-";
-            if (valor)
+            if (valor == -1)
+                tableCell.innerHTML = "\u03B5";
+            else if (valor)
                 tableCell.innerHTML = "q"+valor;
             tableRow.appendChild(tableCell);
         }
@@ -73,15 +86,6 @@ function preencherLista(){
 function adicionarListaTokens(valor){
     if (valor && valor.trim().length > 0 && listaTokens.indexOf(valor) == -1){
         listaTokens.push(valor);
-        var estadosValor = new Array(valor.length);
-        var i = 0;
-        for (i in valor){
-            var letra = valor[i].toLowerCase();
-            var letraIndex = letra.charCodeAt() - 97;
-            estadosValor[i] = new Array(26);
-            estadosValor[i][letraIndex] = Number(i)+1;
-        }
-        estados = estadosValor;
         preencherLista();
     }
     document.getElementById("inputToken").value = "";
