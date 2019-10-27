@@ -1,12 +1,40 @@
 var listaTokens = new Array;
 var estados = new Array;
-var indexEstado = -1;
+var indexEstado = 0;
+var lastCellId = "";
+var currentCellId = "";
 
 function palavraChange(valor) {
-    if (valor.length > 2)
-        document.getElementById("inputPalavra").style.color = "red";
-    else
-        document.getElementById("inputPalavra").style.color = "#444";
+    if (valor.trim().length > 0){
+        var letra = valor[valor.length - 1].toLowerCase();
+        var estado = estados[indexEstado];
+        var index = letra.charCodeAt() - 97;
+        console.log("letra="+letra+", estado="+estado+", index="+index);
+        document.getElementById("inputPalavra").style.color = "black";
+        if (index >= 0) {
+            var proximoIndex = estado[index];
+            console.log("proximoIndex="+proximoIndex);
+            if (proximoIndex) {
+                lastCellId = currentCellId;
+                if (lastCellId.trim().length > 0)
+                    document.getElementById(lastCellId).style.backgroundColor = "#EBF5FF";
+                currentCellId = String(indexEstado)+String(index);
+
+                console.log("lastCellId="+lastCellId+", currentCellId="+currentCellId);
+
+                indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
+
+                document.getElementById(currentCellId).style.backgroundColor = "#409d00";
+            } else
+                document.getElementById("inputPalavra").style.color = "red";
+        } else if (index == -65) {
+            if (currentCellId.trim().length > 0)
+                document.getElementById(currentCellId).style.backgroundColor = "#EBF5FF";
+            indexEstado = 0;
+            lastCellId = "";
+            currentCellId = "";
+        }             
+    }
 }
 
 function preencherLista(){
@@ -40,6 +68,10 @@ function preencherLista(){
             else
                 estadosValor[j][letraIndex] = Number(j)+1;
         }
+
+        // for (j in estadosValor){
+        //     var estado = estadosValor[j];
+        // }
         estados = estadosValor;
     }
 
@@ -77,6 +109,7 @@ function preencherLista(){
                 tableCell.innerHTML = "\u03B5";
             else if (valor)
                 tableCell.innerHTML = "q"+valor;
+            tableCell.id = i+j
             tableRow.appendChild(tableCell);
         }
         tableAutomato.appendChild(tableRow);
