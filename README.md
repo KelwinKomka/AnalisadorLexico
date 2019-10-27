@@ -1,5 +1,11 @@
 # Construção do Analisador Léxico
 
+## Ambiente de teste
+
+https://kelwinkomka.github.io/AutomatoFinito/
+
+## Informações
+
 A construção do Analisador Léxico tem por objetivo mostrar aos alunos da disciplina de Linguagens Formais a aplicação prática dos Autômatos Finitos, mecanismos reconhecedores de Linguagens Regulares.
 
 Pretende-se com isso, transcender os conhecimentos teóricos vistos em aula até o momento, através da implementação do Analisador Léxico.
