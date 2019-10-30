@@ -99,9 +99,12 @@
     word-break:normal;
     border-color:#9ABAD9;
     color:#444;
-    background-color:#EBF5FF;
     text-align:center;
     vertical-align:top;
+  }
+
+.tg tr{
+    background-color:#EBF5FF;
   }
 
 .tg th{
