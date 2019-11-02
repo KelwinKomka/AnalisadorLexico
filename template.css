@@ -103,10 +103,6 @@
     vertical-align:top;
   }
 
-.tg tr{
-    background-color:#EBF5FF;
-  }
-
 .tg th{
     font-size:14px;
     font-weight:normal;
@@ -167,4 +163,28 @@
 .btn span{
   font-size:10px;
   padding-left:5px;
+}
+
+.inputRed {
+  color: red;
+}
+
+.inputBlack {
+  color: black;
+}
+
+.cellHighlight {
+  background-color: #99ccff;
+}
+
+.cell {
+  background-color: #EBF5FF;
+}
+
+.row {
+  background-color:#EBF5FF;
+}
+
+.rowHighlight {
+  background-color: rgb(128, 166, 204);
 }

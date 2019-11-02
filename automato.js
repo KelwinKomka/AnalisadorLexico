@@ -10,38 +10,45 @@ function palavraChange(valor) {
         var estado = estados[indexEstado];
         var index = letra.charCodeAt() - 97;
         console.log("letra="+letra+", estado="+estado+", index="+index);
-        document.getElementById("inputPalavra").style.color = "black";
+        document.getElementById("inputPalavra").className = "inputText inputBlack";
         if (index >= 0) {
             let proximoIndex = estado[index];
             console.log("proximoIndex="+proximoIndex);
             if (proximoIndex) {
                 lastCellId = currentCellId;
                 if (lastCellId.trim().length > 0) {
-                    document.getElementById(lastCellId).style.backgroundColor = "#EBF5FF";
+                    document.getElementById(lastCellId).classList.remove("cellHighlight");
                 }
                 currentCellId = "td"+String(indexEstado)+"."+String(index);
 
                 console.log("lastCellId="+lastCellId+", currentCellId="+currentCellId);
 
+                document.getElementById("tr"+indexEstado).className = "row";
                 indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
 
                 if (indexEstado >= 0) {
-                    document.getElementById(currentCellId).style.backgroundColor = "#99ccff";
+                    document.getElementById(currentCellId).className = "cellHighlight";
+                    document.getElementById("tr"+indexEstado).className = "rowHighlight";
                 }
             } else
-                document.getElementById("inputPalavra").style.color = "red";
+                document.getElementById("inputPalavra").className = "inputText inputRed";
         } else if (index == -65) {
             if (currentCellId.trim().length > 0)
-                document.getElementById(currentCellId).style.backgroundColor = "#EBF5FF";
+                document.getElementById(currentCellId).classList.remove("cellHighlight");
             indexEstado = 0;
             lastCellId = "";
             currentCellId = "";
         }             
     } else {
-        document.getElementById("inputPalavra").style.color = "black";
+        if (indexEstado > 0) {
+            document.getElementById("inputPalavra").className = "inputText inputBlack";
+            document.getElementById("tr"+indexEstado).className = "row";
+            if (lastCellId.length > 0)
+                document.getElementById(lastCellId).classList.remove("cellHighlight");
+            if (currentCellId.length > 0)
+            document.getElementById(currentCellId).classList.remove("cellHighlight");
+        }
         indexEstado = 0;
-        document.getElementById(lastCellId).style.backgroundColor = "#EBF5FF";
-        document.getElementById(currentCellId).style.backgroundColor = "#EBF5FF";
         lastCellId = "";
         currentCellId = "";
     }
@@ -54,7 +61,7 @@ function preencherLista(){
     }
     var i = 0;
 
-    document.getElementById("inputPalavra").style.color = "black";
+    document.getElementById("inputPalavra").className = "inputText inputBlack";
     indexEstado = 0;
     estados = new Array;
     for (i in listaTokens){
@@ -64,6 +71,7 @@ function preencherLista(){
         buttonItem.innerHTML = token;
         buttonItem.addEventListener("click", function(){
             listaTokens.splice(listaTokens.indexOf(token), 1);
+            limparInput();
             preencherLista();
         });
 
@@ -88,44 +96,41 @@ function preencherLista(){
     }
 
     var tableAutomato = document.getElementById("tableAutomato");
-    var tableRow = document.createElement("tr");
-    var tableHeader = document.createElement("th");
-
     while (tableAutomato.hasChildNodes()) {
         tableAutomato.removeChild(tableAutomato.lastChild);
     }
+
+    var header = tableAutomato.createTHead();
+    var tableRow = header.insertRow(-1);
     for (i = 0; i < 27; i++){
-        tableHeader = document.createElement("th");
-        tableHeader.className = "tg-fovp";
+        let cellHeader = document.createElement("th");
+        cellHeader.className = "tg-fovp";
         if (i == 0)
-            tableHeader.innerHTML = " ";
+            cellHeader.innerHTML = " ";
         else
-            tableHeader.innerHTML = String.fromCharCode(96+i);
-        tableRow.appendChild(tableHeader);
+            cellHeader.innerHTML = String.fromCharCode(96+i);
+        tableRow.appendChild(cellHeader);
     }
-    tableAutomato.appendChild(tableRow);
 
     for (i in estados){
         let estado = estados[i];
-        tableRow = document.createElement("tr");
+        tableRow = tableAutomato.insertRow(-1);
         tableRow.id = "tr"+i;
+        tableRow.className = "row";
 
-        let tableCell = document.createElement("td");
+        let tableCell = tableRow.insertCell(-1);
         tableCell.innerHTML = "q"+i;
-        tableRow.appendChild(tableCell);
         
         for (j = 0; j < 26; j++){
-            tableCell = document.createElement("td");
+            tableCell = tableRow.insertCell(-1);
             let valor = estado[j];
             tableCell.innerHTML = "-";
             if (valor == -1)
                 tableCell.innerHTML = "\u03B5";
             else if (valor)
                 tableCell.innerHTML = "q"+valor;
-            tableCell.id = "td"+i+"."+j
-            tableRow.appendChild(tableCell);
+            tableCell.id = "td"+i+"."+j;
         }
-        tableAutomato.appendChild(tableRow);
     }
 }
 
@@ -137,8 +142,13 @@ function adicionarListaTokens(valor){
         preencherLista();
     } else {
         alert("Apenas letras de \"a\" a \"z\" são permitidas!");
-        document.getElementById("inputToken").value = "";
     }
+    limparInput();
+}
+
+function limparInput(){
+    document.getElementById("inputToken").value = "";
+    document.getElementById("inputPalavra").value = "";
 }
 
 preencherLista();
