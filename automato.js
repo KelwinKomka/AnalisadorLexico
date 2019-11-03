@@ -9,10 +9,10 @@ function palavraChange(valor) {
         var letra = valor[valor.length - 1].toLowerCase();
         var estado = estados[indexEstado];
         var index = letra.charCodeAt() - 97;
-        console.log("letra="+letra+", estado="+estado+", index="+index);
+        console.log("letra="+letra+", index="+index);
         document.getElementById("inputPalavra").className = "inputText inputBlack";
         if (index >= 0) {
-            let proximoIndex = estado[index];
+            let proximoIndex = estado[letra];
             console.log("proximoIndex="+proximoIndex);
             if (proximoIndex) {
                 lastCellId = currentCellId;
@@ -40,17 +40,7 @@ function palavraChange(valor) {
             currentCellId = "";
         }             
     } else {
-        if (indexEstado > 0) {
-            document.getElementById("inputPalavra").className = "inputText inputBlack";
-            document.getElementById("tr"+indexEstado).className = "row";
-            if (lastCellId.length > 0)
-                document.getElementById(lastCellId).classList.remove("cellHighlight");
-            if (currentCellId.length > 0)
-            document.getElementById(currentCellId).classList.remove("cellHighlight");
-        }
-        indexEstado = 0;
-        lastCellId = "";
-        currentCellId = "";
+        zerarAutomato(valor);
     }
 }
 
@@ -64,6 +54,7 @@ function preencherLista(){
     document.getElementById("inputPalavra").className = "inputText inputBlack";
     indexEstado = 0;
     estados = new Array;
+    estados[0] = {};
     for (i in listaTokens){
         let token = listaTokens[i];
         let buttonItem = document.createElement("BUTTON");
@@ -79,20 +70,23 @@ function preencherLista(){
 
         let estadosValor = new Array(token.length);
         let j = 0;
+        let lastIndex = estados.length;
         for (j in token){
-            var letra = token[j].toLowerCase();
-            var letraIndex = letra.charCodeAt() - 97;
-            estadosValor[j] = new Array(26);
+            let letra = token[j].toLowerCase();
+            estadosValor[j] = {};
             if (j == token.length-1)
-                estadosValor[j][letraIndex] = -1;
+                estadosValor[j][letra] = -1;
             else
-                estadosValor[j][letraIndex] = Number(j)+1;
+                estadosValor[j][letra] = lastIndex++;
         }
 
-        // for (j in estadosValor){
-        //     var estado = estadosValor[j];
-        // }
-        estados = estadosValor;
+        j = 0;
+        for (j in estadosValor){
+            if (j == 0)
+                estados[j] = Object.assign(estados[j], estadosValor[j]);
+            else
+                estados.push(estadosValor[j]);
+        }
     }
 
     var tableAutomato = document.getElementById("tableAutomato");
@@ -123,12 +117,15 @@ function preencherLista(){
         
         for (j = 0; j < 26; j++){
             tableCell = tableRow.insertCell(-1);
-            let valor = estado[j];
             tableCell.innerHTML = "-";
-            if (valor == -1)
-                tableCell.innerHTML = "\u03B5";
-            else if (valor)
-                tableCell.innerHTML = "q"+valor;
+            let chave = String.fromCharCode(97+j);
+            if (estado.hasOwnProperty(chave)) {
+                let valor = estado[chave];
+                if (valor == -1)
+                    tableCell.innerHTML = "\u03B5";
+                else if (valor)
+                    tableCell.innerHTML = "q"+valor;
+            }
             tableCell.id = "td"+i+"."+j;
         }
     }
@@ -149,6 +146,23 @@ function adicionarListaTokens(valor){
 function limparInput(){
     document.getElementById("inputToken").value = "";
     document.getElementById("inputPalavra").value = "";
+}
+
+function zerarAutomato(valor){
+    if (valor.trim().length == 0 || estados.length == 0){
+        if (indexEstado > 0) {
+            document.getElementById("inputPalavra").className = "inputText inputBlack";
+            document.getElementById("tr"+indexEstado).className = "row";
+        }
+        if (lastCellId.length > 0)
+            document.getElementById(lastCellId).classList.remove("cellHighlight");
+        if (currentCellId.length > 0)
+            document.getElementById(currentCellId).classList.remove("cellHighlight");
+        
+        indexEstado = 0;
+        lastCellId = "";
+        currentCellId = "";
+    }
 }
 
 preencherLista();
