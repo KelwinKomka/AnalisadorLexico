@@ -40,7 +40,20 @@ function palavraChange(valor) {
             currentCellId = "";
         }             
     } else {
-        zerarAutomato(valor);
+        if (valor.trim().length == 0 || estados.length == 0){
+            if (indexEstado > 0) {
+                document.getElementById("inputPalavra").className = "inputText inputBlack";
+                document.getElementById("tr"+indexEstado).className = "row";
+            }
+            if (lastCellId.length > 0)
+                document.getElementById(lastCellId).classList.remove("cellHighlight");
+            if (currentCellId.length > 0)
+                document.getElementById(currentCellId).classList.remove("cellHighlight");
+            
+            indexEstado = 0;
+            lastCellId = "";
+            currentCellId = "";
+        }
     }
 }
 
@@ -49,46 +62,64 @@ function preencherLista(){
     while (divTokens.hasChildNodes()) {
         divTokens.removeChild(divTokens.lastChild);
     }
-    var i = 0;
-
     document.getElementById("inputPalavra").className = "inputText inputBlack";
+
     indexEstado = 0;
     estados = new Array;
     estados[0] = {};
+    let i= 0;
     for (i in listaTokens){
         let token = listaTokens[i];
-        let buttonItem = document.createElement("BUTTON");
-        buttonItem.className = "btn";
-        buttonItem.innerHTML = token;
-        buttonItem.addEventListener("click", function(){
-            listaTokens.splice(listaTokens.indexOf(token), 1);
-            limparInput();
-            preencherLista();
-        });
-
-        divTokens.appendChild(buttonItem);
-
-        let estadosValor = new Array(token.length);
-        let j = 0;
-        let lastIndex = estados.length;
-        for (j in token){
-            let letra = token[j].toLowerCase();
-            estadosValor[j] = {};
-            if (j == token.length-1)
-                estadosValor[j][letra] = -1;
-            else
-                estadosValor[j][letra] = lastIndex++;
-        }
-
-        j = 0;
-        for (j in estadosValor){
-            if (j == 0)
-                estados[j] = Object.assign(estados[j], estadosValor[j]);
-            else
-                estados.push(estadosValor[j]);
-        }
+        adicionarToken(token, divTokens);
+        let estadosValor = criarAutomatoToken(token, estados);
+        estados = inserirAutomatoNaLista(estadosValor, estados);
     }
 
+    criarTabela();
+
+    console.log(estados);
+}
+
+function adicionarToken(token, divTokens){
+    let buttonItem = document.createElement("BUTTON");
+    buttonItem.className = "btn";
+    buttonItem.innerHTML = token;
+    buttonItem.addEventListener("click", function(){
+        listaTokens.splice(listaTokens.indexOf(token), 1);
+        limparInput();
+        preencherLista();
+    });
+
+    divTokens.appendChild(buttonItem);
+}
+
+function criarAutomatoToken(token, estadosArray){
+    estadosValor = new Array(token.length);
+    let i = 0;
+    let lastIndex = estadosArray.length;
+    for (i in token){
+        let letra = token[i].toLowerCase();
+        estadosValor[i] = {};
+        if (i == token.length-1)
+            estadosValor[i][letra] = -1;
+        else
+            estadosValor[i][letra] = lastIndex++;
+    }
+    return estadosValor;
+}
+
+function inserirAutomatoNaLista(estadosValor, estados){
+    let i = 0;
+    for (i in estadosValor){
+        if (i == 0)
+            estados[i] = Object.assign(estados[i], estadosValor[i]);
+        else
+            estados.push(estadosValor[i]);
+    }
+    return estados;
+}
+
+function criarTabela(){
     var tableAutomato = document.getElementById("tableAutomato");
     while (tableAutomato.hasChildNodes()) {
         tableAutomato.removeChild(tableAutomato.lastChild);
@@ -113,7 +144,18 @@ function preencherLista(){
         tableRow.className = "row";
 
         let tableCell = tableRow.insertCell(-1);
-        tableCell.innerHTML = "q"+i;
+        let estadoFinal = false;
+        for(var chave in estado) {
+            if (estado[chave] == -1) {
+                estadoFinal = true;
+                break;
+            }
+        }
+        
+        if (estadoFinal)
+            tableCell.innerHTML = "*q"+i;
+        else
+            tableCell.innerHTML = "q"+i;
         
         for (j = 0; j < 26; j++){
             tableCell = tableRow.insertCell(-1);
@@ -146,23 +188,6 @@ function adicionarListaTokens(valor){
 function limparInput(){
     document.getElementById("inputToken").value = "";
     document.getElementById("inputPalavra").value = "";
-}
-
-function zerarAutomato(valor){
-    if (valor.trim().length == 0 || estados.length == 0){
-        if (indexEstado > 0) {
-            document.getElementById("inputPalavra").className = "inputText inputBlack";
-            document.getElementById("tr"+indexEstado).className = "row";
-        }
-        if (lastCellId.length > 0)
-            document.getElementById(lastCellId).classList.remove("cellHighlight");
-        if (currentCellId.length > 0)
-            document.getElementById(currentCellId).classList.remove("cellHighlight");
-        
-        indexEstado = 0;
-        lastCellId = "";
-        currentCellId = "";
-    }
 }
 
 preencherLista();
