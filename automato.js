@@ -8,7 +8,7 @@ function palavraChange(valor) {
     if (valor.trim().length > 0 && estados.length > 0){
         var letra = valor[valor.length - 1].toLowerCase();
         var estado = estados[indexEstado];
-        var index = letra.charCodeAt() - 97;
+        var index = (letra.charCodeAt() - 96);
         console.log("letra="+letra+", index="+index);
         document.getElementById("inputPalavra").className = "inputText inputBlack";
         if (index >= 0) {
@@ -32,9 +32,10 @@ function palavraChange(valor) {
                 }
             } else
                 document.getElementById("inputPalavra").className = "inputText inputRed";
-        } else if (index == -65) {
+        } else if (index == -64) {
             if (currentCellId.trim().length > 0)
                 document.getElementById(currentCellId).classList.remove("cellHighlight");
+            document.getElementById("tr"+indexEstado).className = "row";
             indexEstado = 0;
             lastCellId = "";
             currentCellId = "";
@@ -71,7 +72,7 @@ function preencherLista(){
     for (i in listaTokens){
         let token = listaTokens[i];
         adicionarToken(token, divTokens);
-        let estadosValor = criarAutomatoToken(token, estados);
+        let estadosValor = criarAutomatoToken(token);
         estados = inserirAutomatoNaLista(estadosValor, estados);
     }
 
@@ -93,28 +94,42 @@ function adicionarToken(token, divTokens){
     divTokens.appendChild(buttonItem);
 }
 
-function criarAutomatoToken(token, estadosArray){
+function criarAutomatoToken(token){
     estadosValor = new Array(token.length);
     let i = 0;
-    let lastIndex = estadosArray.length;
     for (i in token){
         let letra = token[i].toLowerCase();
         estadosValor[i] = {};
-        if (i == token.length-1)
-            estadosValor[i][letra] = -1;
-        else
-            estadosValor[i][letra] = lastIndex++;
+        estadosValor[i][letra] = parseInt(i)+1;
+        if (i == token.length-1) 
+            estadosValor[parseInt(i)+1] = {"&": 0};
     }
+    console.log(estadosValor);
     return estadosValor;
 }
 
 function inserirAutomatoNaLista(estadosValor, estados){
     let i = 0;
+    let indexLetra = 0;
     for (i in estadosValor){
-        if (i == 0)
-            estados[i] = Object.assign(estados[i], estadosValor[i]);
-        else
-            estados.push(estadosValor[i]);
+        let chave = Object.keys(estadosValor[i])[0];
+        let last = i == (estadosValor.length - 1);
+        if (estados[indexLetra] && estados[indexLetra].hasOwnProperty(chave)){
+            indexLetra = estados[indexLetra][chave];
+        } else if (estados[indexLetra]) {
+            if (last)
+                estados[indexLetra][chave] = -1;
+            else
+                estados[indexLetra][chave] = ++indexLetra;
+        } else {
+            if (last) {
+                estados[indexLetra] = {};
+                estados[indexLetra][chave] = -1;
+            } else {
+                estados[indexLetra] = {};
+                estados[indexLetra][chave] = ++indexLetra;
+            }
+        }
     }
     return estados;
 }
@@ -127,13 +142,15 @@ function criarTabela(){
 
     var header = tableAutomato.createTHead();
     var tableRow = header.insertRow(-1);
-    for (i = 0; i < 27; i++){
+    for (i = 0; i < 28; i++){
         let cellHeader = document.createElement("th");
         cellHeader.className = "tg-fovp";
         if (i == 0)
             cellHeader.innerHTML = " ";
+        else if (i == 1)
+            cellHeader.innerHTML = "\u03B5";
         else
-            cellHeader.innerHTML = String.fromCharCode(96+i);
+            cellHeader.innerHTML = String.fromCharCode(95+i);
         tableRow.appendChild(cellHeader);
     }
 
@@ -144,30 +161,21 @@ function criarTabela(){
         tableRow.className = "row";
 
         let tableCell = tableRow.insertCell(-1);
-        let estadoFinal = false;
-        for(var chave in estado) {
-            if (estado[chave] == -1) {
-                estadoFinal = true;
-                break;
-            }
-        }
-        
-        if (estadoFinal)
+        if (estado.hasOwnProperty("&"))
             tableCell.innerHTML = "*q"+i;
         else
             tableCell.innerHTML = "q"+i;
         
-        for (j = 0; j < 26; j++){
+        for (j = 0; j < 27; j++){
             tableCell = tableRow.insertCell(-1);
             tableCell.innerHTML = "-";
-            let chave = String.fromCharCode(97+j);
+            let chave = String.fromCharCode(96+j);
             if (estado.hasOwnProperty(chave)) {
                 let valor = estado[chave];
-                if (valor == -1)
-                    tableCell.innerHTML = "\u03B5";
-                else if (valor)
+                if (valor)
                     tableCell.innerHTML = "q"+valor;
-            }
+            } else if (j == 0 && estado.hasOwnProperty("&"))
+                tableCell.innerHTML = "\u03B5";
             tableCell.id = "td"+i+"."+j;
         }
     }
