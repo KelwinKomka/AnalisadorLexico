@@ -2,7 +2,7 @@
 
 ## Ambiente de teste
 
-https://kelwinkomka.github.io/AutomatoFinito/
+https://kelwinkomka.github.io/AnalisadorLexico/
 
 ## Informações
 
