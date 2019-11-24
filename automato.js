@@ -116,20 +116,15 @@ function inserirAutomatoNaLista(estadosValor, estados){
         let last = i == (estadosValor.length - 1);
         if (estados[indexLetra] && estados[indexLetra].hasOwnProperty(chave)){
             indexLetra = estados[indexLetra][chave];
-        } else if (estados[indexLetra]) {
+        } else {
             if (last)
                 estados[indexLetra][chave] = -1;
-            else
-                estados[indexLetra][chave] = ++indexLetra;
-        } else {
-            if (last) {
+            else {
+                estados[indexLetra][chave] = estados.length;
+                indexLetra = estados.length;
                 estados[indexLetra] = {};
-                estados[indexLetra][chave] = -1;
-            } else {
-                estados[indexLetra] = {};
-                estados[indexLetra][chave] = ++indexLetra;
             }
-        }
+        } 
     }
     return estados;
 }
