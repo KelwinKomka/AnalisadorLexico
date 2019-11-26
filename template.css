@@ -140,6 +140,7 @@
 .divToken {
   height: 90%;
   margin-top: 10px;
+  margin-bottom: 10px;
   font-size:14px;
   padding:10px 5px;
   border-style:solid;
@@ -165,11 +166,15 @@
   padding-left:5px;
 }
 
-.inputRed {
+.red {
   color: red;
 }
 
-.inputBlack {
+.green {
+  color: green;
+}
+
+.black {
   color: black;
 }
 

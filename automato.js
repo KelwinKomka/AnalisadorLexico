@@ -9,9 +9,8 @@ function palavraChange(valor) {
     if (valor.trim().length > 0 && estados.length > 0){
         var letra = valor[valor.length - 1].toLowerCase();
         var estado = estados[indexEstado];
-        var index = (letra.charCodeAt() - 96);
+        var index = (letra.charCodeAt() - 97);
         console.log("letra="+letra+", index="+index);
-        document.getElementById("inputPalavra").className = "inputText inputBlack";
         if (index >= 0) {
             let proximoIndex = estado[letra];
             console.log("proximoIndex="+proximoIndex);
@@ -31,13 +30,20 @@ function palavraChange(valor) {
                     document.getElementById(currentCellId).className = "cellHighlight";
                     document.getElementById("tr"+indexEstado).className = "rowHighlight";
                 }
+                handleLabel(false);
             } else {
-                document.getElementById("inputPalavra").className = "inputText inputRed";
+                handleLabel(true);
                 erro = true;
             }
-        } else if (index == -64) {
-            if (currentCellId.trim().length > 0)
+        } else if (index == -65) {
+            if (currentCellId.trim().length > 0) {
                 document.getElementById(currentCellId).classList.remove("cellHighlight");
+                if (!estado["&"]) {
+
+                    erro = true;
+                    handleLabel(true);
+                }
+            }
             document.getElementById("tr"+indexEstado).className = "row";
             indexEstado = 0;
             lastCellId = "";
@@ -45,8 +51,8 @@ function palavraChange(valor) {
         }             
     } else {
         if (valor.trim().length == 0 || estados.length == 0){
-            if (indexEstado > 0) {
-                document.getElementById("inputPalavra").className = "inputText inputBlack";
+            document.getElementById("inputPalavra").className = "inputText black";
+            if (indexEstado >= 0) {
                 document.getElementById("tr"+indexEstado).className = "row";
             }
             if (lastCellId.length > 0)
@@ -57,8 +63,22 @@ function palavraChange(valor) {
             indexEstado = 0;
             lastCellId = "";
             currentCellId = "";
+            document.getElementById("labelEstado").innerHTML = "";
             erro = false;
         }
+    }
+}
+
+function handleLabel(erroEstado){
+    let labelEstado = document.getElementById("labelEstado");
+    if (!erroEstado) {
+        document.getElementById("inputPalavra").className = "inputText black";
+        labelEstado.innerHTML = "<strong>Correto</strong>";
+        labelEstado.className = "green";
+    } else {
+        document.getElementById("inputPalavra").className = "inputText red";
+        labelEstado.innerHTML = "<strong>Inválido!<br/>Limpe o campo para reiniciar!</strong>";
+        labelEstado.className = "red";
     }
 }
 
@@ -67,7 +87,7 @@ function preencherLista(){
     while (divTokens.hasChildNodes()) {
         divTokens.removeChild(divTokens.lastChild);
     }
-    document.getElementById("inputPalavra").className = "inputText inputBlack";
+    document.getElementById("inputPalavra").className = "inputText black";
 
     indexEstado = 0;
     estados = new Array;
@@ -141,15 +161,13 @@ function criarTabela(){
 
     var header = tableAutomato.createTHead();
     var tableRow = header.insertRow(-1);
-    for (i = 0; i < 28; i++){
+    for (i = 0; i < 27; i++){
         let cellHeader = document.createElement("th");
         cellHeader.className = "tg-fovp";
         if (i == 0)
             cellHeader.innerHTML = " ";
-        else if (i == 1)
-            cellHeader.innerHTML = "\u03B5";
         else
-            cellHeader.innerHTML = String.fromCharCode(95+i);
+            cellHeader.innerHTML = String.fromCharCode(96+i);
         tableRow.appendChild(cellHeader);
     }
 
@@ -165,16 +183,15 @@ function criarTabela(){
         else
             tableCell.innerHTML = "q"+i;
         
-        for (j = 0; j < 27; j++){
+        for (j = 0; j < 26; j++){
             tableCell = tableRow.insertCell(-1);
             tableCell.innerHTML = "-";
-            let chave = String.fromCharCode(96+j);
+            let chave = String.fromCharCode(97+j);
             if (estado.hasOwnProperty(chave)) {
                 let valor = estado[chave];
                 if (valor)
                     tableCell.innerHTML = "q"+valor;
-            } else if (j == 0 && estado.hasOwnProperty("&"))
-                tableCell.innerHTML = "\u03B5";
+            }
             tableCell.id = "td"+i+"."+j;
         }
     }

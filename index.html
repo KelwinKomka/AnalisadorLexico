@@ -11,14 +11,14 @@
           <div class="user-input-wrp">
             <br/>
             <input id="inputToken" type="text" class="inputText" onchange="adicionarListaTokens(this.value)" required>
-            <span class="floating-label">Digite um token (a..z)</span>
+            <span class="floating-label">Digite um token e pressione ENTER para adicionar (a..z)</span>
           </div>
           <div class="user-input-wrp">
             <br/>
             <input id="inputPalavra" type="text" class="inputText" oninput="palavraChange(this.value)" required>
             <span class="floating-label">Digite uma palavra</span>
           </div>
-          <span>Feito por: <br/> Kelwin Komka </span>
+          <span id="labelEstado"></span>
         </div>
 
         <div id="divTable" class="tg-wrap">
@@ -27,8 +27,9 @@
         </div>
     </article>
     <nav id="mainNav" style="text-align: center;">
-      <output><strong>Tokens</strong></output>
+      <output><strong>Tokens (Clique no token para remover)</strong></output>
       <div id="divTokens" class="divToken"></div>
+      <span>Feito por: Kelwin Komka </span>
     </nav>
   </body>
   <script src="automato.js"></script>
