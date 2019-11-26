@@ -3,6 +3,7 @@ var estados = new Array;
 var indexEstado = 0;
 var lastCellId = "";
 var currentCellId = "";
+var erro = false;
 
 function palavraChange(valor) {
     if (valor.trim().length > 0 && estados.length > 0){
@@ -14,7 +15,7 @@ function palavraChange(valor) {
         if (index >= 0) {
             let proximoIndex = estado[letra];
             console.log("proximoIndex="+proximoIndex);
-            if (proximoIndex) {
+            if (proximoIndex && !erro) {
                 lastCellId = currentCellId;
                 if (lastCellId.trim().length > 0) {
                     document.getElementById(lastCellId).classList.remove("cellHighlight");
@@ -30,8 +31,10 @@ function palavraChange(valor) {
                     document.getElementById(currentCellId).className = "cellHighlight";
                     document.getElementById("tr"+indexEstado).className = "rowHighlight";
                 }
-            } else
+            } else {
                 document.getElementById("inputPalavra").className = "inputText inputRed";
+                erro = true;
+            }
         } else if (index == -64) {
             if (currentCellId.trim().length > 0)
                 document.getElementById(currentCellId).classList.remove("cellHighlight");
@@ -54,6 +57,7 @@ function palavraChange(valor) {
             indexEstado = 0;
             lastCellId = "";
             currentCellId = "";
+            erro = false;
         }
     }
 }
