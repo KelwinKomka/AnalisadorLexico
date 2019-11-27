@@ -1,67 +1,77 @@
 var listaTokens = new Array;
-var estados = new Array;
-var indexEstado = 0;
-var lastCellId = "";
 var currentCellId = "";
 var erro = false;
 
 function palavraChange(valor) {
     if (valor.trim().length > 0 && estados.length > 0){
-        var letra = valor[valor.length - 1].toLowerCase();
-        var estado = estados[indexEstado];
-        var index = (letra.charCodeAt() - 97);
-        console.log("letra="+letra+", index="+index);
-        if (index >= 0) {
-            let proximoIndex = estado[letra];
-            console.log("proximoIndex="+proximoIndex);
-            if (proximoIndex && !erro) {
-                lastCellId = currentCellId;
-                if (lastCellId.trim().length > 0) {
-                    document.getElementById(lastCellId).classList.remove("cellHighlight");
-                }
-                currentCellId = "td"+String(indexEstado)+"."+String(index);
+        var indexEstado = 0;
+        erro = false;
+        for (i in valor) {
+            var letra = valor[i].toLowerCase();
+            var estado = estados[indexEstado];
+            var index = (letra.charCodeAt() - 97);
+            console.log("i="+i+", letra="+letra+", index="+index);
 
-                console.log("lastCellId="+lastCellId+", currentCellId="+currentCellId);
+            if (index >= 0) {
+                let proximoIndex = estado[letra];
+                console.log("proximoIndex="+proximoIndex);
+
+                if (proximoIndex && !erro) {
+                    let tableAutomato = document.getElementById("tableAutomato");
+                    for (j in tableAutomato.rows) 
+                        if (j > 0) {
+                            let row = tableAutomato.rows[j];
+                            row.className = "row";
+                            for (h in row.cells) {
+                                let cell = row.cells[h];
+                                cell.className = "";
+                            }
+                        }
+
+                    currentCellId = "td"+String(indexEstado)+"."+String(index);
+
+                    document.getElementById("tr"+indexEstado).className = "row";
+                    indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
+
+                    if (indexEstado >= 0) {
+                        document.getElementById(currentCellId).className = "cellHighlight";
+                        document.getElementById("tr"+indexEstado).className = "rowHighlight";
+                    }
+                    handleLabel(false);
+                } else {
+                    handleLabel(true);
+                    erro = true;
+                }
+            } else if (index == -65) {
+                if (currentCellId.trim().length > 0) {
+                    document.getElementById(currentCellId).classList.remove("cellHighlight");
+                    if (!estado["&"]) {
+                        erro = true;
+                        handleLabel(true);
+                    }
+                }
 
                 document.getElementById("tr"+indexEstado).className = "row";
-                indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
+                indexEstado = 0;
+                lastCellId = "";
+                currentCellId = "";
+            }        
 
-                if (indexEstado >= 0) {
-                    document.getElementById(currentCellId).className = "cellHighlight";
-                    document.getElementById("tr"+indexEstado).className = "rowHighlight";
-                }
-                handleLabel(false);
-            } else {
-                handleLabel(true);
-                erro = true;
-            }
-        } else if (index == -65) {
-            if (currentCellId.trim().length > 0) {
-                document.getElementById(currentCellId).classList.remove("cellHighlight");
-                if (!estado["&"]) {
-
-                    erro = true;
-                    handleLabel(true);
-                }
-            }
-            document.getElementById("tr"+indexEstado).className = "row";
-            indexEstado = 0;
-            lastCellId = "";
-            currentCellId = "";
-        }             
+        }    
     } else {
         if (valor.trim().length == 0 || estados.length == 0){
             document.getElementById("inputPalavra").className = "inputText black";
-            if (indexEstado >= 0) {
-                document.getElementById("tr"+indexEstado).className = "row";
-            }
-            if (lastCellId.length > 0)
-                document.getElementById(lastCellId).classList.remove("cellHighlight");
-            if (currentCellId.length > 0)
-                document.getElementById(currentCellId).classList.remove("cellHighlight");
-            
-            indexEstado = 0;
-            lastCellId = "";
+            let tableAutomato = document.getElementById("tableAutomato");
+            for (j in tableAutomato.rows) 
+                if (j > 0) {
+                    let row = tableAutomato.rows[j];
+                    row.className = "row";
+                    for (h in row.cells) {
+                        let cell = row.cells[h];
+                        cell.className = "";
+                    }
+                }
+
             currentCellId = "";
             document.getElementById("labelEstado").innerHTML = "";
             erro = false;
@@ -77,7 +87,7 @@ function handleLabel(erroEstado){
         labelEstado.className = "green";
     } else {
         document.getElementById("inputPalavra").className = "inputText red";
-        labelEstado.innerHTML = "<strong>Inválido!<br/>Limpe o campo para reiniciar!</strong>";
+        labelEstado.innerHTML = "<strong>Inválido!</strong>";
         labelEstado.className = "red";
     }
 }
@@ -89,17 +99,17 @@ function preencherLista(){
     }
     document.getElementById("inputPalavra").className = "inputText black";
 
-    indexEstado = 0;
     estados = new Array;
-    estados[0] = {};
-    let i= 0;
-    for (i in listaTokens){
-        let token = listaTokens[i];
-        adicionarToken(token, divTokens);
-        let estadosValor = criarAutomatoToken(token);
-        estados = inserirAutomatoNaLista(estadosValor, estados);
+    if (listaTokens.length > 0) {
+        estados[0] = {};
+        let i= 0;
+        for (i in listaTokens){
+            let token = listaTokens[i];
+            adicionarToken(token, divTokens);
+            let estadosValor = criarAutomatoToken(token);
+            estados = inserirAutomatoNaLista(estadosValor, estados);
+        }
     }
-
     criarTabela();
 
     console.log(estados);
