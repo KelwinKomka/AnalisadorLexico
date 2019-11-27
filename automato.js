@@ -1,56 +1,58 @@
 var listaTokens = new Array;
 var currentCellId = "";
+var indexEstado = 0;
+var estados = new Array;
 var erro = false;
+var backspace = false;
+var historico = new Array;
 
 function palavraChange(valor) {
-    if (valor.trim().length > 0 && estados.length > 0){
-        var indexEstado = 0;
-        erro = false;
-        for (i in valor) {
-            var letra = valor[i].toLowerCase();
-            var estado = estados[indexEstado];
-            var index = (letra.charCodeAt() - 97);
-            console.log("i="+i+", letra="+letra+", index="+index);
+    if (!backspace && valor.trim().length > 0 && estados.length > 0){
+        var letra = valor[valor.length-1].toLowerCase();
+        var estado = estados[indexEstado];
+        var index = (letra.charCodeAt() - 97);
+        console.log("i="+i+", letra="+letra+", index="+index);
 
-            if (index >= 0) {
-                let proximoIndex = estado[letra];
-                console.log("proximoIndex="+proximoIndex);
+        if (index >= 0) {
+            let proximoIndex = estado[letra];
+            console.log("proximoIndex="+proximoIndex);
 
-                if (proximoIndex && !erro) {
-                    limparEstados();
+            if (proximoIndex && !erro) {
+                limparEstados();
 
-                    currentCellId = "td"+String(indexEstado)+"."+String(index);
-                    let rowId = "tr"+indexEstado;
-                    setRowClass(rowId, "row");
+                currentCellId = "td"+String(indexEstado)+"."+String(index);
+                let rowId = "tr"+indexEstado;
+                setRowClass(rowId, "row");
 
-                    indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
-                    if (indexEstado >= 0) {
-                        rowId = "tr"+indexEstado;
-                        setRowClass(rowId, "rowHighlight");
-                        handleCellClass("adicionarClasse", currentCellId, "cellHighlight");
-                    }
-                    handleLabel(false);
-                } else {
-                    handleLabel(true);
-                    erro = true;
+                indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
+                if (indexEstado >= 0) {
+                    rowId = "tr"+indexEstado;
+                    setRowClass(rowId, "rowHighlight");
+                    handleCellClass("adicionarClasse", currentCellId, "cellHighlight");
+                    historico.push(indexEstado+";"+letra);
                 }
-            } else if (index == -65) {
-                if (currentCellId.trim().length > 0) {
-                    handleCellClass("removerClasse", currentCellId, "cellHighlight");
-                    if (!estado["&"]) {
-                        erro = true;
-                        handleLabel(true);
-                    }
-                }
-
-                setRowClass("tr"+indexEstado, "row");
-                indexEstado = 0;
-                currentCellId = "";
+                handleLabel(false);
+                console.log(historico);
             } else {
-                erro = true;
                 handleLabel(true);
-            }     
-        }    
+                erro = true;
+            }
+        } else if (index == -65) {
+            if (currentCellId.trim().length > 0) {
+                handleCellClass("removerClasse", currentCellId, "cellHighlight");
+                if (!estado["&"]) {
+                    erro = true;
+                    handleLabel(true);
+                }
+            }
+
+            setRowClass("tr"+indexEstado, "row");
+            indexEstado = 0;
+            currentCellId = "";
+        } else {
+            erro = true;
+            handleLabel(true);
+        }   
     } else {
         if (valor.trim().length == 0 || estados.length == 0){
             limparEstados();
@@ -58,9 +60,22 @@ function palavraChange(valor) {
             document.getElementById("labelEstado").innerHTML = "";
             currentCellId = "";
             erro = false;
+            indexEstado = 0;
         }
     }
+    backspace = false;
 }
+
+document.getElementById('inputPalavra').onkeydown = function() {
+    var key = event.keyCode || event.charCode;
+
+    if( key == 8 || key == 46 && event.value.trim().length > 0) {
+        backspace = true;
+        valor = historico.pop();
+        console.log(historico);
+        console.log(valor);
+    }
+};
 
 function handleLabel(erroEstado){
     let labelEstado = document.getElementById("labelEstado");
@@ -107,6 +122,7 @@ function preencherLista(){
     document.getElementById("inputPalavra").className = "inputText black";
 
     estados = new Array;
+    historico = new Array;
     if (listaTokens.length > 0) {
         estados[0] = {};
         let i= 0;
