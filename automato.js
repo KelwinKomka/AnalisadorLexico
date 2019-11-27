@@ -17,25 +17,17 @@ function palavraChange(valor) {
                 console.log("proximoIndex="+proximoIndex);
 
                 if (proximoIndex && !erro) {
-                    let tableAutomato = document.getElementById("tableAutomato");
-                    for (j in tableAutomato.rows) 
-                        if (j > 0) {
-                            let row = tableAutomato.rows[j];
-                            row.className = "row";
-                            for (h in row.cells) {
-                                let cell = row.cells[h];
-                                cell.className = "";
-                            }
-                        }
+                    limparEstados();
 
                     currentCellId = "td"+String(indexEstado)+"."+String(index);
+                    let rowId = "tr"+indexEstado;
+                    setRowClass(rowId, "row");
 
-                    document.getElementById("tr"+indexEstado).className = "row";
                     indexEstado = proximoIndex == -1 ? 0 : proximoIndex;
-
                     if (indexEstado >= 0) {
-                        document.getElementById(currentCellId).className = "cellHighlight";
-                        document.getElementById("tr"+indexEstado).className = "rowHighlight";
+                        rowId = "tr"+indexEstado;
+                        setRowClass(rowId, "rowHighlight");
+                        handleCellClass("adicionarClasse", currentCellId, "cellHighlight");
                     }
                     handleLabel(false);
                 } else {
@@ -44,36 +36,27 @@ function palavraChange(valor) {
                 }
             } else if (index == -65) {
                 if (currentCellId.trim().length > 0) {
-                    document.getElementById(currentCellId).classList.remove("cellHighlight");
+                    handleCellClass("removerClasse", currentCellId, "cellHighlight");
                     if (!estado["&"]) {
                         erro = true;
                         handleLabel(true);
                     }
                 }
 
-                document.getElementById("tr"+indexEstado).className = "row";
+                setRowClass("tr"+indexEstado, "row");
                 indexEstado = 0;
-                lastCellId = "";
                 currentCellId = "";
-            }        
-
+            } else {
+                erro = true;
+                handleLabel(true);
+            }     
         }    
     } else {
         if (valor.trim().length == 0 || estados.length == 0){
+            limparEstados();
             document.getElementById("inputPalavra").className = "inputText black";
-            let tableAutomato = document.getElementById("tableAutomato");
-            for (j in tableAutomato.rows) 
-                if (j > 0) {
-                    let row = tableAutomato.rows[j];
-                    row.className = "row";
-                    for (h in row.cells) {
-                        let cell = row.cells[h];
-                        cell.className = "";
-                    }
-                }
-
-            currentCellId = "";
             document.getElementById("labelEstado").innerHTML = "";
+            currentCellId = "";
             erro = false;
         }
     }
@@ -90,6 +73,30 @@ function handleLabel(erroEstado){
         labelEstado.innerHTML = "<strong>Inválido!</strong>";
         labelEstado.className = "red";
     }
+}
+
+function limparEstados(){
+    let tableAutomato = document.getElementById("tableAutomato");
+    for (j in tableAutomato.rows) 
+        if (j > 0) {
+            let row = tableAutomato.rows[j];
+            row.className = "row";
+            for (h in row.cells) {
+                let cell = row.cells[h];
+                cell.className = "";
+            }
+        }
+}
+
+function setRowClass(id, valor){
+    document.getElementById(id).className = valor;
+}
+
+function handleCellClass(processo, id, valor){
+    if (processo == "adicionarClasse")
+        document.getElementById(id).classList.add(valor);
+    else if (processo == "removerClasse")
+        document.getElementById(id).classList.remove(valor);
 }
 
 function preencherLista(){
